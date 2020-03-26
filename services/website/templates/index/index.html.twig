@@ -1,0 +1,8 @@
+<div>
+    {{ form(form) }}
+</div>
+<ul>
+    {% for item in history %}
+        <li>{{ item.amount }} {{ item.fromCurrency }} -> {{ item.newAmount }} {{ item.toCurrency }}</li>
+    {% endfor %}
+</ul>

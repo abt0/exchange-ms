@@ -1,0 +1,72 @@
+version: '3.7'
+
+services:
+  website:
+    build: ./centos
+    environment:
+      TZ: Europe/Berlin
+    container_name: ms_website
+    ports:
+      - '8880:80'
+      - '8843:443'
+    volumes:
+      - ./centos/php.ini:/etc/php.ini:ro
+      - ./centos/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./centos/nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./centos/supervisord.conf:/etc/supervisord.conf:ro
+      - ./var/logs/nginx:/var/log/nginx
+      - ./var/logs/php-fpm:/var/log/php-fpm
+      - ./var/cache/composer_cache:/composer_cache
+      - type: bind
+        source: ../services/website
+        target: /var/www/website
+        consistency: cached
+    hostname: website.ms
+    extra_hosts:
+      - 'redis.ms:172.245.245.4'
+      - 'exchange.ms:172.245.245.3'
+    networks:
+      ms_network:
+        ipv4_address: 172.245.245.2
+
+  exchange:
+    build: ./centos
+    environment:
+      TZ: Europe/Berlin
+    container_name: ms_exchange
+    ports:
+      - '8980:80'
+      - '8944:443'
+    volumes:
+      - ./centos/php.ini:/etc/php.ini:ro
+      - ./centos/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./centos/nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./centos/supervisord.conf:/etc/supervisord.conf:ro
+      - ./var/logs/nginx:/var/log/nginx
+      - ./var/logs/php-fpm:/var/log/php-fpm
+      - ./var/cache/composer_cache:/composer_cache
+      - type: bind
+        source: ../services/exchange
+        target: /var/www/exchange
+        consistency: cached
+    hostname: exchange.ms
+    extra_hosts:
+      - 'redis.ms:172.245.245.4'
+    networks:
+      ms_network:
+        ipv4_address: 172.245.245.3
+
+  redis:
+    image: centos/redis:latest
+    container_name: ms_redis
+    ports:
+      - '6399:6379'
+    hostname: redis.ms
+    networks:
+      ms_network:
+        ipv4_address: 172.245.245.4
+
+networks:
+  ms_network:
+    external:
+      name: ms_network
