@@ -25,8 +25,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Service\RestApiExchangeService:
+    app.custom_redis_provider:
+        class: \Redis
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+        arguments:
+            - 'redis://redis.ms:6399'
+            - { retry_interval: 2, timeout: 10 }
+
+    app.rest_exchange_service:
         class: App\Service\RestApiExchangeService
         public: false
         arguments:
-            - '@cache.app'
+            - '@cache.my_redis'

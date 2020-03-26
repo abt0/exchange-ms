@@ -7,13 +7,11 @@ framework:
         # The data in this cache should persist between deploys.
         # Other options include:
 
-        # Redis
-        app: cache.adapter.redis
-        default_redis_provider: redis://redis.ms:6399
-
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: null
+        pools:
+            cache.my_redis:
+                adapter: cache.adapter.redis
+                provider: app.custom_redis_provider
