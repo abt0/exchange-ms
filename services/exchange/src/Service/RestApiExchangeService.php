@@ -48,7 +48,6 @@ final class RestApiExchangeService implements ExchangeService
     {
         $item = $this->cache->getItem(self::CACHE_KEY_CURRENCIES);
 
-        /** @todo Make Redis working or use DB */
         if (!$item->isHit()) {
             $response = $this->httpClient->get(
                 'https://api.exchangeratesapi.io/latest?base=' . self::BASE_CURRENCY
